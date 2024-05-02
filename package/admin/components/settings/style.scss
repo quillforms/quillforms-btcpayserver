@@ -1,0 +1,34 @@
+.quillforms-settings-payments-btcpayserver {
+	padding: 5px;
+}
+
+.quillforms-settings-payments-btcpayserver-row {
+	display: flex;
+	align-items: center;
+	margin-bottom: 10px;
+
+	&.quillforms-settings-payments-btcpayserver-row-enabled {
+		margin-bottom: 21px;
+	}
+
+	&.quillforms-settings-payments-btcpayserver-row-mode {
+		margin-bottom: 15px;
+	}
+
+	.quillforms-settings-payments-btcpayserver-row-label {
+		width: 155px;
+	}
+	.admin-components-text-control {
+		width: 300px;
+	}
+
+	.components-custom-select-control__label {
+		margin-bottom: 0;
+	}
+	.components-base-control__field {
+		margin-bottom: 0;
+	}
+	.components-text-control__input {
+		margin: 0;
+	}
+}

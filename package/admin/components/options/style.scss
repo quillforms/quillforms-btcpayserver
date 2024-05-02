@@ -1,0 +1,28 @@
+.btcpayserver-gateway-options {
+    display: flex;
+    gap: 10px;
+
+    .btcpayserver-plan-name {
+        width: 100%;
+
+        .components-base-control__field {
+            margin-bottom: 0;
+        }
+
+        .components-text-control__input {
+            margin: 0;
+        }
+    }
+
+    .btcpayserver-product-type {
+        width: 100%;
+
+        .components-base-control__field {
+            margin-bottom: 0;
+        }
+
+        .components-text-control__input {
+            margin: 0;
+        }
+    }
+}

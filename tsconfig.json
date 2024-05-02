@@ -1,0 +1,38 @@
+{
+	"compilerOptions": {
+		"rootDir": "..",
+		"baseUrl": ".",
+		"allowJs": true,
+		"checkJs": true,
+		"allowSyntheticDefaultImports": true,
+		"jsx": "react-jsx",
+		"target": "es2018",
+		"module": "esnext",
+		"lib": [ "dom", "esnext" ],
+		"declaration": true,
+		"declarationMap": true,
+		"composite": true,
+		"emitDeclarationOnly": true,
+		"isolatedModules": true,
+
+		/* Strict Type-Checking Options */
+		"strict": true,
+
+		/* Additional Checks */
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+
+		/* Module Resolution Options */
+		"moduleResolution": "node",
+
+		/* This needs to be false so our types are possible to consume without setting this */
+		"esModuleInterop": false,
+		"resolveJsonModule": true,
+		"noImplicitAny": false,
+		"typeRoots": [ "./node_modules/@types" ],
+		"types": []
+	},
+	"include": [ "package/**/*", "package/*", "../quillforms/packages/**/*" ]
+}

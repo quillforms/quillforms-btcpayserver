@@ -1,0 +1,45 @@
+{
+	"name": "quillforms-btcpayserver",
+	"version": "1.0.0",
+	"private": true,
+	"scripts": {
+		"build": "npm run build-admin & npm run build-renderer",
+		"dev": "npm run dev-admin & npm run dev-renderer",
+		"dev-admin": "qf-scripts start package/admin --output-path=build/admin",
+		"dev-renderer": "qf-scripts start package/renderer --output-path=build/renderer",
+		"build-admin": "qf-scripts build package/admin --output-path=build/admin",
+		"build-renderer": "qf-scripts build package/renderer --output-path=build/renderer",
+		"wp-env": "wp-env",
+		"pretest-unit-php": "wp-env start",
+		"test-unit-php": "wp-env run phpunit 'phpunit -c /var/www/html/wp-content/plugins/quillforms-stripe/phpunit.xml.dist --verbose'"
+	},
+	"dependencies": {
+		"@quillforms/admin-components": "file:../quillforms/packages/admin-components",
+		"@quillforms/config": "file:../quillforms/packages/config",
+		"@quillforms/navigation": "file:../quillforms/packages/navigation",
+		"@quillforms/payment-gateways": "file:../quillforms/packages/payment-gateways",
+		"@quillforms/renderer-core": "file:../quillforms/packages/renderer-core",
+		"@wordpress/api-fetch": "file:../quillforms/node_modules/@wordpress/api-fetch",
+		"@wordpress/components": "file:../quillforms/node_modules/@wordpress/components",
+		"@wordpress/data": "file:../quillforms/node_modules/@wordpress/data",
+		"@wordpress/element": "file:../quillforms/node_modules/@wordpress/element",
+		"@wordpress/hooks": "file:../quillforms/node_modules/@wordpress/hooks",
+		"@wordpress/i18n": "file:../quillforms/node_modules/@wordpress/i18n",
+		"@wordpress/icons": "file:../quillforms/node_modules/@wordpress/icons",
+		"@wordpress/url": "file:../quillforms/node_modules/@wordpress/url",
+		"classnames": "file:../quillforms/node_modules/classnames",
+		"emotion": "file:../quillforms/node_modules/emotion",
+		"react": "file:../quillforms/node_modules/react",
+		"react-dom": "file:../quillforms/node_modules/react-dom",
+		"react-loader-spinner": "file:../quillforms/node_modules/react-loader-spinner",
+		"react-transition-group": "^4.4.5",
+		"tinycolor2": "file:../quillforms/node_modules/tinycolor2"
+	},
+	"devDependencies": {
+		"@quillforms/scripts": "file:../quillforms/packages/scripts",
+		"@wordpress/babel-preset-default": "file:../quillforms/node_modules/@wordpress/babel-preset-default",
+		"@wordpress/browserslist-config": "file:../quillforms/node_modules/@wordpress/browserslist-config",
+		"@wordpress/prettier-config": "file:../quillforms/node_modules/@wordpress/prettier-config",
+		"prettier": "file:../quillforms/node_modules/prettier"
+	}
+}

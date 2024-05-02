@@ -1,0 +1,14 @@
+{
+	"core": "https://wordpress.org/wordpress-5.5.zip",
+	"plugins": [
+		"../quillforms",
+		"."
+	],
+	"themes": [],
+	"config": {
+		"WP_DEBUG_DISPLAY": true
+	},
+	"phpVersion": "7.1",
+	"port": 8060,
+	"testsPort": 8061
+}
