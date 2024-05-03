@@ -1,0 +1,232 @@
+# Copyright (C) 2024 quillforms.com
+# This file is distributed under the same license as the Quill Forms BTCPayServer plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Quill Forms BTCPayServer 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/quillforms-btcpayserver\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2024-05-03T22:18:22+02:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.5.0\n"
+"X-Domain: quillforms-btcpayserver\n"
+
+#. Plugin Name of the plugin
+msgid "Quill Forms BTCPayServer"
+msgstr ""
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+msgid "https://quillforms.com"
+msgstr ""
+
+#. Description of the plugin
+msgid "BTCPayServer extension for Quill Forms"
+msgstr ""
+
+#. Author of the plugin
+msgid "quillforms.com"
+msgstr ""
+
+#: includes/class-admin-ajax.php:59
+msgid "Invalid host."
+msgstr ""
+
+#: includes/class-admin-ajax.php:69
+msgid "QuillForms BTCPayServer"
+msgstr ""
+
+#: includes/class-renderer-ajax.php:123
+msgid "Failed to create invoice"
+msgstr ""
+
+#: includes/class-renderer-ajax.php:138
+msgid "Authorize.Net addon is not configured"
+msgstr ""
+
+#: includes/class-renderer-ajax.php:155
+msgid "Cannot retrieve from submission"
+msgstr ""
+
+#: includes/class-renderer-ajax.php:179
+msgid "This payment method isn't available."
+msgstr ""
+
+#: includes/class-webhook.php:150
+msgid "Payment with incorrect amount has been made"
+msgstr ""
+
+#: includes/class-webhook.php:164
+msgid "Payment with incorrect currency has been made"
+msgstr ""
+
+#. translators: %s for payment id
+#: includes/class-webhook.php:193
+msgid "Payment with invoice %s has been made"
+msgstr ""
+
+#: includes/class-webhook.php:201
+#: includes/class-webhook.php:263
+msgid "Exception on getting invoice"
+msgstr ""
+
+#. translators: %s for payment id
+#: includes/class-webhook.php:255
+msgid "Invoice %1$s status changed to %2$s"
+msgstr ""
+
+#: includes/class-webhook.php:295
+msgid "Exception on webhook verification"
+msgstr ""
+
+#: includes/class-webhook.php:299
+msgid "Webhook verification failed"
+msgstr ""
+
+#: includes/rest/class-settings-controller.php:107
+msgid "Both API Login ID and Transaction Key are required"
+msgstr ""
+
+#: includes/rest/class-settings-controller.php:112
+msgid "Signature Key is required"
+msgstr ""
+
+#: includes/rest/class-settings-controller.php:135
+msgid "Cannot create webhook. See log for details."
+msgstr ""
+
+#. translators: %s: Mode.
+#: includes/rest/class-settings-controller.php:157
+msgid "Account connected successfully at %s mode."
+msgstr ""
+
+#: build/admin/index.js:1
+msgid "Error on generating API Key"
+msgstr ""
+
+#: build/admin/index.js:1
+msgid "Server URL is required"
+msgstr ""
+
+#: build/admin/index.js:8
+msgid "Add your BTCPayServer store URL below."
+msgstr ""
+
+#: build/admin/index.js:8
+msgid "Click on the \"Generate API Key\" button."
+msgstr ""
+
+#: build/admin/index.js:8
+msgid "You will redirect to your BTCPayServer store."
+msgstr ""
+
+#: build/admin/index.js:8
+msgid "Choose the store you want to generate the API key for."
+msgstr ""
+
+#: build/admin/index.js:8
+msgid "Click on the \"Continue\" button."
+msgstr ""
+
+#: build/admin/index.js:8
+msgid "Enter a label like \"QuillForms\"."
+msgstr ""
+
+#: build/admin/index.js:8
+msgid "Click on the \"Authorize app\" button."
+msgstr ""
+
+#: build/admin/index.js:8
+msgid "When you are redirected back to this page, you will see your API key and store ID."
+msgstr ""
+
+#: build/admin/index.js:8
+msgid "Sandbox mode"
+msgstr ""
+
+#: build/admin/index.js:8
+msgid "Sandbox Server URL"
+msgstr ""
+
+#: build/admin/index.js:8
+msgid "Generate API Key"
+msgstr ""
+
+#: build/admin/index.js:8
+msgid "Sandbox Store ID"
+msgstr ""
+
+#: build/admin/index.js:8
+msgid "Sandbox API Key"
+msgstr ""
+
+#: build/admin/index.js:8
+msgid "Live Server URL"
+msgstr ""
+
+#: build/admin/index.js:8
+msgid "Live Store ID"
+msgstr ""
+
+#: build/admin/index.js:8
+msgid "Live API Key"
+msgstr ""
+
+#: build/admin/index.js:11
+msgid "Method labels for customer:"
+msgstr ""
+
+#: build/admin/index.js:11
+msgid "Checkout Label"
+msgstr ""
+
+#: build/admin/index.js:11
+msgid "Settings saved"
+msgstr ""
+
+#: build/admin/index.js:11
+msgid "Error on saving settings"
+msgstr ""
+
+#: build/admin/index.js:11
+msgid "Save"
+msgstr ""
+
+#: build/admin/index.js:11
+msgid "Error on loading settings"
+msgstr ""
+
+#: build/admin/index.js:11
+msgid "Customer Name"
+msgstr ""
+
+#: build/admin/index.js:11
+msgid "Customer Email"
+msgstr ""
+
+#: build/admin/index.js:11
+msgid "Customer Address 1"
+msgstr ""
+
+#: build/admin/index.js:11
+msgid "Customer Address 2"
+msgstr ""
+
+#: build/admin/index.js:11
+msgid "Customer City"
+msgstr ""
+
+#: build/admin/index.js:11
+msgid "Customer State"
+msgstr ""
+
+#: build/admin/index.js:11
+msgid "Customer Zip"
+msgstr ""
+
+#: build/admin/index.js:11
+msgid "Customer Country"
+msgstr ""
