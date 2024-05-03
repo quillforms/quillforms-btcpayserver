@@ -10,6 +10,7 @@ namespace QuillForms_BTCPayServer;
 
 use DateTime;
 use QuillForms\Form_Submission;
+use QuillForms\Merge_Tags;
 use BTCPayServer\Client\Invoice;
 use BTCPayServer\Client\InvoiceCheckoutOptions;
 use BTCPayServer\Util\PreciseNumber;
@@ -95,6 +96,12 @@ class Renderer_Ajax {
 		);
 
 		$checkoutOptions->setRedirectURL( $return_url );
+		$metadata = array_merge(
+			[
+				'submission_id' => $submission_id,
+			],
+			$this->get_customer()
+		);
 		try {
 			$invoice = $client->createInvoice(
 				$this->mode_settings['store_id'],
@@ -102,9 +109,7 @@ class Renderer_Ajax {
 				PreciseNumber::parseInt( $amount ),
 				$submission_id,
 				null, // this is null here as we handle it in the metadata.
-				[
-					'submission_id' => $submission_id,
-				],
+				$metadata,
 				$checkoutOptions
 			);
 
@@ -173,6 +178,50 @@ class Renderer_Ajax {
 
 		wp_send_json_error( [ 'message' => esc_html__( "This payment method isn't available.", 'quillforms-btcpayserver' ) ], 400 );
 		exit;
+	}
+
+	/**
+	 * Get customer
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	private function get_customer() {
+		$options = $this->form_submission->form_data['payments']['gateways_options']['btcpayserver'] ?? [];
+
+		$name  = Merge_Tags::instance()->process( $options['customer_name'] ?? null, $this->form_submission->entry, $this->form_submission->form_data, 'raw' );
+		$email = Merge_Tags::instance()->process( $options['customer_email'] ?? null, $this->form_submission->entry, $this->form_submission->form_data, 'raw' );
+		if ( ! filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
+			$email = '';
+		}
+		$address1 = Merge_Tags::instance()->process( $options['customer_address1'] ?? null, $this->form_submission->entry, $this->form_submission->form_data, 'raw' );
+		$address2 = Merge_Tags::instance()->process( $options['customer_address2'] ?? null, $this->form_submission->entry, $this->form_submission->form_data, 'raw' );
+		$city     = Merge_Tags::instance()->process( $options['customer_city'] ?? null, $this->form_submission->entry, $this->form_submission->form_data, 'raw' );
+		$state    = Merge_Tags::instance()->process( $options['customer_state'] ?? null, $this->form_submission->entry, $this->form_submission->form_data, 'raw' );
+		$zip      = Merge_Tags::instance()->process( $options['customer_zip'] ?? null, $this->form_submission->entry, $this->form_submission->form_data, 'raw' );
+		$country  = Merge_Tags::instance()->process( $options['customer_country'] ?? null, $this->form_submission->entry, $this->form_submission->form_data, 'raw' );
+
+		$data = [
+			'buyerEmail'    => $email,
+			'buyerName'     => $name,
+			'buyerAddress1' => $address1,
+			'buyerAddress2' => $address2,
+			'buyerCity'     => $city,
+			'buyerState'    => $state,
+			'buyerZip'      => $zip,
+			'buyerCountry'  => $country,
+		];
+
+		// remove empty values.
+		$data = array_filter(
+			$data,
+			function( $value ) {
+				return ! empty( $value );
+			}
+		);
+
+		return $data;
 	}
 
 }

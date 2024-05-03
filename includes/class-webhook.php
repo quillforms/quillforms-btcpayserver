@@ -8,6 +8,7 @@
 
 namespace QuillForms_BTCPayServer;
 
+use Exception;
 use QuillForms\Form_Submission;
 use QuillForms_Entries\Entries;
 use QuillForms_Entries\Entry;

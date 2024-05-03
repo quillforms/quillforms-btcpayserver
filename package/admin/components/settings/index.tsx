@@ -82,7 +82,7 @@ const Settings: React.FC = () => {
 		if ( ! settings[ `${ settings.mode }_site_url` ] ) {
 			createErrorNotice(
 				`⛔ ${ __(
-					'Site URL is required',
+					'Server URL is required',
 					'quillforms-btcpayserver'
 				) }`,
 				{
@@ -195,7 +195,56 @@ const Settings: React.FC = () => {
 						<h4 style={ { margin: '0 0 5px' } }>
 							Setup Instructions:
 						</h4>
-						<ol style={ { marginBottom: 20 } }></ol>
+						<ol style={ { marginBottom: 20 } }>
+							<li>
+								{ __(
+									'Add your BTCPayServer store URL below.',
+									'quillforms-btcpayserver'
+								) }
+							</li>
+							<li>
+								{ __(
+									'Click on the "Generate API Key" button.',
+									'quillforms-btcpayserver'
+								) }
+							</li>
+							<li>
+								{ __(
+									'You will redirect to your BTCPayServer store.',
+									'quillforms-btcpayserver'
+								) }
+							</li>
+							<li>
+								{ __(
+									'Choose the store you want to generate the API key for.',
+									'quillforms-btcpayserver'
+								) }
+							</li>
+							<li>
+								{ __(
+									'Click on the "Continue" button.',
+									'quillforms-btcpayserver'
+								) }
+							</li>
+							<li>
+								{ __(
+									'Enter a label like "QuillForms".',
+									'quillforms-btcpayserver'
+								) }
+							</li>
+							<li>
+								{ __(
+									'Click on the "Authorize app" button.',
+									'quillforms-btcpayserver'
+								) }
+							</li>
+							<li>
+								{ __(
+									'When you are redirected back to this page, you will see your API key and store ID.',
+									'quillforms-btcpayserver'
+								) }
+							</li>
+						</ol>
 					</div>
 					<div className="quillforms-settings-payments-btcpayserver-row quillforms-settings-payments-btcpayserver-row-mode">
 						<div className="quillforms-settings-payments-btcpayserver-row-label">
@@ -218,7 +267,7 @@ const Settings: React.FC = () => {
 							<div className="quillforms-settings-payments-btcpayserver-row">
 								<div className="quillforms-settings-payments-btcpayserver-row-label">
 									{ __(
-										'Sandbox Site URL',
+										'Sandbox Server URL',
 										'quillforms-btcpayserver'
 									) }
 								</div>
@@ -282,7 +331,7 @@ const Settings: React.FC = () => {
 							<div className="quillforms-settings-payments-btcpayserver-row">
 								<div className="quillforms-settings-payments-btcpayserver-row-label">
 									{ __(
-										'Live Site URL',
+										'Live Server URL',
 										'quillforms-btcpayserver'
 									) }
 								</div>

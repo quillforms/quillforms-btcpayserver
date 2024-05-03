@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:       Quill Forms Authorize.Net
+ * Plugin Name:       Quill Forms BTCPayServer
  * Plugin URI:        https://quillforms.com
  * Description:       BTCPayServer extension for Quill Forms
  * Version:           1.2.2
@@ -9,7 +9,7 @@
  * Text Domain:       quillforms-btcpayserver
  * Domain Path:       /languages
  * Requires at least: 5.4
- * Requires PHP:      7.1
+ * Requires PHP:      8.0
  *
  * @package QuillForms_BTCPayServer
  */

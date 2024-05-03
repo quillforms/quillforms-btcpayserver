@@ -94,7 +94,7 @@ class BTCPayServer_Helper {
 			wp_redirect( admin_url( 'admin.php?page=quillforms&path=settings' ) );
 			exit;
 		}
-		$mode     = ! empty( $_GET['quillforms_btcpayserver_auth'] ) ? sanitize_text_field( $_GET['quillforms_btcpayserver_auth'] ) : 'sandbox';
+		$mode     = ! empty( $_GET['quillforms_btcpayserver_auth'] ) ? sanitize_text_field( $_GET['quillforms_btcpayserver_auth'] ) : 'live';
 		$site_url = $this->addon->settings->get( "{$mode}_site_url" );
 		$client   = new Store( $site_url, $api_key );
 		if ( empty( $client->getStores() ) ) {
@@ -157,7 +157,7 @@ class BTCPayServer_Helper {
 			if ( $stored_webhook['id'] ?? false ) {
 				$existing = $client->getWebhook( $store_id, $stored_webhook['id'] );
 				if ( $existing->getData()['id'] === $stored_webhook['id'] ) {
-					return $existing->getData();
+					return $stored_webhook;
 				}
 			}
 

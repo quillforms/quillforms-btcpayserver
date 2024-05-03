@@ -40,14 +40,14 @@ const Options: React.FC< Props > = ( { settings, onChange } ) => {
 		<div className="btcpayserver-gateway-options">
 			<div className="btcpayserver-customer-name">
 				<label>
-					{ __( 'Customer First Name', 'quillforms-btcpayserver' ) }
+					{ __( 'Customer Name', 'quillforms-btcpayserver' ) }
 				</label>
 				<ComboboxControl
-					value={ options.customer_first_name ?? {} }
+					value={ options.customer_name ?? {} }
 					onChange={ ( value ) => {
 						onChange( {
 							...options,
-							customer_first_name: value,
+							customer_name: value,
 						} );
 					} }
 					customize={ customize }
@@ -56,14 +56,110 @@ const Options: React.FC< Props > = ( { settings, onChange } ) => {
 			</div>
 			<div className="btcpayserver-customer-email">
 				<label>
-					{ __( 'Customer Last Name', 'quillforms-btcpayserver' ) }
+					{ __( 'Customer Email', 'quillforms-btcpayserver' ) }
 				</label>
 				<ComboboxControl
-					value={ options.customer_last_name ?? {} }
+					value={ options.customer_email ?? {} }
 					onChange={ ( value ) => {
 						onChange( {
 							...options,
-							customer_last_name: value,
+							customer_email: value,
+						} );
+					} }
+					customize={ customize }
+					isToggleEnabled={ false }
+				/>
+			</div>
+			<div className="btcpayserver-customer-address1">
+				<label>
+					{ __( 'Customer Address 1', 'quillforms-btcpayserver' ) }
+				</label>
+				<ComboboxControl
+					value={ options.customer_address1 ?? {} }
+					onChange={ ( value ) => {
+						onChange( {
+							...options,
+							customer_address1: value,
+						} );
+					} }
+					customize={ customize }
+					isToggleEnabled={ false }
+				/>
+			</div>
+			<div className="btcpayserver-customer-address2">
+				<label>
+					{ __( 'Customer Address 2', 'quillforms-btcpayserver' ) }
+				</label>
+				<ComboboxControl
+					value={ options.customer_address2 ?? {} }
+					onChange={ ( value ) => {
+						onChange( {
+							...options,
+							customer_address2: value,
+						} );
+					} }
+					customize={ customize }
+					isToggleEnabled={ false }
+				/>
+			</div>
+			<div className="btcpayserver-customer-city">
+				<label>
+					{ __( 'Customer City', 'quillforms-btcpayserver' ) }
+				</label>
+				<ComboboxControl
+					value={ options.customer_city ?? {} }
+					onChange={ ( value ) => {
+						onChange( {
+							...options,
+							customer_city: value,
+						} );
+					} }
+					customize={ customize }
+					isToggleEnabled={ false }
+				/>
+			</div>
+			<div className="btcpayserver-customer-state">
+				<label>
+					{ __( 'Customer State', 'quillforms-btcpayserver' ) }
+				</label>
+				<ComboboxControl
+					value={ options.customer_state ?? {} }
+					onChange={ ( value ) => {
+						onChange( {
+							...options,
+							customer_state: value,
+						} );
+					} }
+					customize={ customize }
+					isToggleEnabled={ false }
+				/>
+			</div>
+			<div className="btcpayserver-customer-zip">
+				<label>
+					{ __( 'Customer Zip', 'quillforms-btcpayserver' ) }
+				</label>
+				<ComboboxControl
+					value={ options.customer_zip ?? {} }
+					onChange={ ( value ) => {
+						onChange( {
+							...options,
+							customer_zip: value,
+						} );
+					} }
+					customize={ customize }
+					isToggleEnabled={ false }
+				/>
+			</div>
+			<div className="btcpayserver-customer-country">
+				<label>
+					{ __( 'Customer Country', 'quillforms-btcpayserver' ) }
+				</label>
+				<ComboboxControl
+					value={ options.customer_country ?? {} }
+					onChange={ ( value ) => {
+						onChange( {
+							...options,
+							customer_country: value,
 						} );
 					} }
 					customize={ customize }

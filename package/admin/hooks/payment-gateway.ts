@@ -8,6 +8,7 @@ import { __ } from '@wordpress/i18n';
  * Internal Dependencies
  */
 import Settings from '../components/settings';
+import Options from '../components/options';
 
 addFilter(
 	'QuillForms.PaymentGateways.PaymentGatewayModule',
@@ -16,6 +17,15 @@ addFilter(
 		if ( slug === 'btcpayserver' ) {
 			gateway.active = true;
 			gateway.settings = Settings;
+			gateway.options = {
+				component: Options,
+				has: ( settings: any ) => true,
+				validate: ( settings: any ) => {
+					return {
+						valid: true,
+					};
+				},
+			};
 
 			const localize = window[ 'quillforms_btcpayserver_localize' ] ?? {};
 			if ( localize.configured ) {

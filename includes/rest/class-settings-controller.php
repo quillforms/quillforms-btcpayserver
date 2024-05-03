@@ -187,7 +187,7 @@ class Settings_Controller extends Abstract_Settings_Controller {
 			$webhook = $client->createWebhook( $store_id, $webhook_url, BTCPayServer_Helper::WEBHOOK_EVENTS, null );
 
 			return $webhook->getData();
-		} catch ( Exception $e ) {
+		} catch ( \Exception $e ) {
 			return false;
 		}
 	}
