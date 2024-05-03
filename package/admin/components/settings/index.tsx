@@ -81,29 +81,42 @@ const Settings: React.FC = () => {
 		if ( ! settings.mode ) return;
 		if ( ! settings[ `${ settings.mode }_site_url` ] ) return;
 		setIsGenerating( true );
-		
+
 		try {
 			// @ts-ignore
-			const res = await fetch( ConfigApi.getAdminUrl() + 'admin-ajax.php', {
-				method: 'POST',
+			const res = await fetch(
+				ConfigApi.getAdminUrl() + 'admin-ajax.php',
+				{
+					method: 'POST',
 					body: new URLSearchParams( {
 						action: 'quillforms_btcpayserver_get_api_key',
 						mode: settings.mode,
 						host: settings[ `${ settings.mode }_site_url` ],
 						nonce: ajax_nonce,
 					} ),
-			} );
+				}
+			);
 			const data = await res.json();
-			console.log(data.data);
-			
-			// if(data.data.url){
-			// 	// Redirect to the generated api key
-			// 	window.location.replace(data.url);
-			// }
-			
-		} catch (error) {
-			
-		}
+
+			if ( data.data.url ) {
+				// Redirect to the generated api key
+				window.location.href = data.data.url;
+			} else {
+				createErrorNotice(
+					`⛔ ${
+						data.message ??
+						__(
+							'Error on generating API Key',
+							'quillforms-btcpayserver'
+						)
+					}`,
+					{
+						type: 'snackbar',
+						isDismissible: true,
+					}
+				);
+			}
+		} catch ( error ) {}
 	};
 
 	const save = () => {
@@ -155,11 +168,7 @@ const Settings: React.FC = () => {
 						align-items: center;
 					` }
 				>
-					<Loader
-						color="#8640e3"
-						height={ 50 }
-						width={ 50 }
-					/>
+					<Loader color="#8640e3" height={ 50 } width={ 50 } />
 				</div>
 			) : ! settings ? (
 				__( 'Error on loading settings', 'quillforms-btcpayserver' )
@@ -174,9 +183,7 @@ const Settings: React.FC = () => {
 						<h4 style={ { margin: '0 0 5px' } }>
 							Setup Instructions:
 						</h4>
-						<ol style={ { marginBottom: 20 } }>
-							
-						</ol>
+						<ol style={ { marginBottom: 20 } }></ol>
 					</div>
 					<div className="quillforms-settings-payments-btcpayserver-row quillforms-settings-payments-btcpayserver-row-mode">
 						<div className="quillforms-settings-payments-btcpayserver-row-label">
@@ -205,14 +212,9 @@ const Settings: React.FC = () => {
 								</div>
 								<TextControl
 									className=""
-									value={
-										settings.sandbox_site_url ?? ''
-									}
+									value={ settings.sandbox_site_url ?? '' }
 									onChange={ ( value ) =>
-										setSetting(
-											'sandbox_site_url',
-											value
-										)
+										setSetting( 'sandbox_site_url', value )
 									}
 								/>
 							</div>
@@ -225,8 +227,11 @@ const Settings: React.FC = () => {
 											width={ 20 }
 										/>
 									) : (
-										__( 'Generate API Key', 'quillforms-btcpayserver' )
-									)}
+										__(
+											'Generate API Key',
+											'quillforms-btcpayserver'
+										)
+									) }
 								</Button>
 							</div>
 							<div className="quillforms-settings-payments-btcpayserver-row">
@@ -238,14 +243,9 @@ const Settings: React.FC = () => {
 								</div>
 								<TextControl
 									className=""
-									value={
-										settings.sandbox_site_id ?? ''
-									}
+									value={ settings.sandbox_site_id ?? '' }
 									onChange={ ( value ) =>
-										setSetting(
-											'sandbox_site_id',
-											value
-										)
+										setSetting( 'sandbox_site_id', value )
 									}
 								/>
 							</div>
@@ -258,14 +258,9 @@ const Settings: React.FC = () => {
 								</div>
 								<TextControl
 									className=""
-									value={
-										settings.sandbox_api_key ?? ''
-									}
+									value={ settings.sandbox_api_key ?? '' }
 									onChange={ ( value ) =>
-										setSetting(
-											'sandbox_api_key',
-											value
-										)
+										setSetting( 'sandbox_api_key', value )
 									}
 								/>
 							</div>
@@ -283,10 +278,7 @@ const Settings: React.FC = () => {
 									className=""
 									value={ settings.live_site_url ?? '' }
 									onChange={ ( value ) =>
-										setSetting(
-											'live_site_url',
-											value
-										)
+										setSetting( 'live_site_url', value )
 									}
 								/>
 							</div>
@@ -301,10 +293,7 @@ const Settings: React.FC = () => {
 									className=""
 									value={ settings.live_site_id ?? '' }
 									onChange={ ( value ) =>
-										setSetting(
-											'live_site_id',
-											value
-										)
+										setSetting( 'live_site_id', value )
 									}
 								/>
 							</div>
@@ -319,10 +308,7 @@ const Settings: React.FC = () => {
 									className=""
 									value={ settings.live_api_key ?? '' }
 									onChange={ ( value ) =>
-										setSetting(
-											'live_api_key',
-											value
-										)
+										setSetting( 'live_api_key', value )
 									}
 								/>
 							</div>

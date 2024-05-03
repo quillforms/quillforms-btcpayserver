@@ -176,7 +176,7 @@ final class BTCPayServer extends Payment_Gateway {
 			'mode'                    => $mode,
 			'customer_checkout_label' => $settings['customer_checkout_label'] ?? '',
 		];
-		$keys          = [ 'api_key', 'site_id', 'site_url', 'webhook_id' ];
+		$keys          = [ 'api_key', 'site_id', 'site_url', 'webhook' ];
 		foreach ( $keys as $key ) {
 			if ( empty( $settings[ "{$mode}_$key" ] ) ) {
 				return false;

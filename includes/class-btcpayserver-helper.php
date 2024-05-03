@@ -122,14 +122,14 @@ class BTCPayServer_Helper {
 		$api_key_name  = "{$mode}_api_key";
 		$site_url_name = "{$mode}_site_url";
 		$site_id_name  = "{$mode}_site_id";
-		$webhook_id    = "{$mode}_webhook_id";
+		$webhook_name  = "{$mode}_webhook";
 		$this->addon->settings->update(
 			[
 				'mode'         => $mode,
 				$api_key_name  => $api_key,
 				$site_url_name => $site_url,
 				$site_id_name  => $this->get_store_id(),
-				$webhook_id    => $webhook['id'],
+				$webhook_name  => $webhook,
 			]
 		);
 
@@ -161,7 +161,7 @@ class BTCPayServer_Helper {
 				}
 			}
 
-			$webhook = $client->createWebhook( $store_id, $webhook_url, Helper::WEBHOOK_EVENTS, null );
+			$webhook = $client->createWebhook( $store_id, $webhook_url, self::WEBHOOK_EVENTS, null );
 
 			return $webhook->getData();
 		} catch ( Exception $e ) {
@@ -178,7 +178,7 @@ class BTCPayServer_Helper {
 	 * @return string
 	 */
 	private function get_webhook_url( $mode ) {
-		return site_url( "quillforms_btcpayserver_webhook_{$mode}", 'https' );
+		return site_url( "?quillforms_btcpayserver_webhook=$mode", 'https' );
 	}
 
 	/**

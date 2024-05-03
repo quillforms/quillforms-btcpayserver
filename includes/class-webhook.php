@@ -11,8 +11,8 @@ namespace QuillForms_BTCPayServer;
 use QuillForms\Form_Submission;
 use QuillForms_Entries\Entries;
 use QuillForms_Entries\Entry;
-use net\authorize\api\contract\v1 as AnetAPI;
-use net\authorize\api\controller as AnetController;
+use BTCPayServer\Client\Webhook as BTCPayServerWebhook;
+use BTCPayServer\Client\Invoice;
 use Throwable;
 
 /**
@@ -41,22 +41,13 @@ class Webhook {
 	private $mode;
 
 	/**
-	 * BTCPayServer client
+	 * Mode settings
 	 *
 	 * @since 1.0.0
 	 *
-	 * @var AnetAPI\MerchantAuthenticationType
+	 * @var array
 	 */
-	private $merchant_authentication;
-
-	/**
-	 * BTCPayServer client
-	 *
-	 * @since 1.0.0
-	 *
-	 * @var ANetEnvironment
-	 */
-	private $environment;
+	private $mode_settings;
 
 	/**
 	 * Constructor
@@ -68,63 +59,7 @@ class Webhook {
 	public function __construct( $addon ) {
 		$this->addon = $addon;
 
-		add_action( 'rewrite_rules_array', [ $this, 'register_btcpayserver_webhook_endpoint' ] );
-		add_action( 'init', [ $this, 'btcpayserver_webhook_rewrite_tags' ] );
-		add_action( 'wp', [ $this, 'maybe_handle_webhook' ], 100 );
-		add_action( 'init', array( $this, 'flush_rewrite_rules' ), 9999999 );
-	}
-
-	/**
-	 * Flush rewrite rules
-	 *
-	 * @since 1.1.1
-	 *
-	 * @return boolean
-	 */
-	public function flush_rewrite_rules() {
-
-		if ( ! $option = get_option( 'quillforms-btcpayserver-flush-rewrite-rules' ) ) {
-			return false;
-		}
-
-		if ( $option == 1 ) {
-
-			flush_rewrite_rules();
-			update_option( 'quillforms-btcpayserver-flush-rewrite-rules', 0 );
-
-		}
-
-		return true;
-
-	}
-
-	/**
-	 * Registers webhook endpoint.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param array $rules Rewrite rules.
-	 * @return array
-	 */
-	public function register_btcpayserver_webhook_endpoint( $rules ) {
-		$new_rules = array(
-			'quillforms_btcpayserver_webhook_sandbox/' => 'index.php?quillforms_btcpayserver_webhook_sandbox',
-			'quillforms_btcpayserver_webhook_sandbox'  => 'index.php?quillforms_btcpayserver_webhook_sandbox',
-			'quillforms_btcpayserver_webhook_live/'    => 'index.php?quillforms_btcpayserver_webhook_live',
-			'quillforms_btcpayserver_webhook_live'     => 'index.php?quillforms_btcpayserver_webhook_live',
-		);
-		$new_rules = array_merge( $new_rules, $rules );
-		return $new_rules;
-	}
-
-	/**
-	 * Registers webhook rewrite tags.
-	 *
-	 * @since 1.0.0
-	 */
-	public function btcpayserver_webhook_rewrite_tags() {
-		add_rewrite_tag( '%quillforms_btcpayserver_webhook_sandbox%', '([^/]*)' );
-		add_rewrite_tag( '%quillforms_btcpayserver_webhook_live%', '([^/]*)' );
+		add_action( 'quillforms_loaded', [ $this, 'maybe_handle_webhook' ], 100 );
 	}
 
 	/**
@@ -136,45 +71,44 @@ class Webhook {
 	 */
 	public function maybe_handle_webhook() {
 		// check webhook.
-		global $wp_query;
+		$webhook_mode = $_GET['quillforms_btcpayserver_webhook'] ?? null;
+		if ( empty( $webhook_mode ) ) {
+			return;
+		}
 
 		// check if configured.
 		$mode_settings = $this->addon->get_mode_settings();
 		if ( ! $mode_settings ) {
-			return false;
+			$this->respond( 200, "BTCPayServer isn't configured!" );
 		}
 
-		if ( ! isset( $wp_query->query_vars[ "quillforms_btcpayserver_webhook_{$mode_settings['mode']}" ] ) ) {
-			return false;
+		// check current mode match.
+		if ( $mode_settings['mode'] !== $webhook_mode ) {
+			$this->respond( 200, 'Unmatched current mode!' );
 		}
-		$this->merchant_authentication = $this->addon->get_btcpayserver_merchant_authentication( $mode_settings );
-		$this->environment             = $this->addon->get_btcpayserver_environment( $mode_settings );
 
-		$this->mode = $mode_settings['mode'];
+		// set mode.
+		$this->mode          = $mode_settings['mode'];
+		$this->mode_settings = $mode_settings;
 		// webhook event.
 		$webhook_event = json_decode( file_get_contents( 'php://input' ) );
 		// verify it.
-		$verification = $this->get_webhook_verification( file_get_contents( 'php://input' ), $mode_settings['signature_key'] );
+		$verification = $this->get_webhook_verification( file_get_contents( 'php://input' ) );
 		if ( ! $verification ) {
-			return;
+			return $this->respond( 200, 'Webhook verification failed!' );
 		}
+
 		// handle event.
-		switch ( $webhook_event->eventType ?? null ) {
-			case 'net.authorize.customer.subscription.cancelled':
-			case 'net.authorize.customer.subscription.created':
-			case 'net.authorize.customer.subscription.expired':
-			case 'net.authorize.customer.subscription.expiring':
-			case 'net.authorize.customer.subscription.failed':
-			case 'net.authorize.customer.subscription.suspended':
-			case 'net.authorize.customer.subscription.terminated':
-			case 'net.authorize.customer.subscription.updated':
-				$this->handle_subscription_updated( $webhook_event );
+		switch ( $webhook_event->type ?? null ) {
+			case 'InvoicePaymentSettled':
+			case 'InvoiceProcessing':
+			case 'InvoiceExpired':
+			case 'InvoiceSettled':
+			case 'InvoiceInvalid':
+				$this->handle_invoice( $webhook_event );
 				break;
-			case 'net.authorize.payment.refund.created':
-				$this->handle_capture_refunded( $webhook_event );
-				break;
-			case 'net.authorize.payment.authcapture.created':
-				$this->handle_capture_created( $webhook_event );
+			case 'InvoiceReceivedPayment':
+				$this->handle_received_payment( $webhook_event );
 				break;
 		}
 
@@ -182,236 +116,160 @@ class Webhook {
 	}
 
 	/**
-	 * Handle subscription created/updated/deleted
+	 * Handle received payment
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param object $subscription
+	 * @param object $webhook_event Webhook event.
+	 *
 	 * @return void
 	 */
-	private function handle_subscription_updated( $subscription ) {
+	public function handle_received_payment( $webhook_event ) {
 		// check quillforms metadata.
-		$btcpayserver_subscriptions = get_option( 'qf_btcpayserver_subscriptions', [] );
-		$submission_id              = $btcpayserver_subscriptions[ $subscription->payload->id ] ?? null;
+		$submission_id = $webhook_event->metadata->submission_id ?? null;
 		if ( ! $submission_id ) {
-			return;
+			$this->respond( 200 );
 		}
 
 		$form_submission = Form_Submission::instance();
 		$restore         = $form_submission->restore_pending_submission( $submission_id );
-		if ( $restore ) {
-			// for submissions that still pending, we wait for active status to continue it.
-			if ( ! in_array( $subscription->payload->status, [ 'active' ], true ) ) {
-				return;
+		if ( ! $restore ) {
+			$this->respond( 200 );
+		}
+
+		$client = new Invoice( $this->mode_settings['site_url'], $this->mode_settings['api_key'] );
+		try {
+			$invoice      = $client->getInvoice( $this->mode_settings['site_id'], $webhook_event->invoiceId );
+			$invoice_data = $invoice->getData();
+			$invoice_id   = $invoice_data['id'];
+
+			// ensure amount.
+			if ( (float) $invoice_data['amount'] !== (float) $form_submission->entry->meta['payments']['value']['products']['total'] ) {
+				quillforms_get_logger()->error(
+					esc_html__( 'Payment with incorrect amount has been made', 'quillforms-btcpayserver' ),
+					[
+						'code'          => 'unmatched_payment_amount',
+						'submission_id' => $submission_id,
+						'invoice_id'    => $invoice_id,
+						'amount'        => $invoice_data['amount'],
+					]
+				);
+				$this->respond( 200 );
 			}
 
-			// save gateway and method.
+			// ensure currency.
+			if ( strtolower( $invoice_data['currency'] ) !== strtolower( $form_submission->entry->meta['payments']['value']['currency']['code'] ) ) {
+				quillforms_get_logger()->error(
+					esc_html__( 'Payment with incorrect currency has been made', 'quillforms-btcpayserver' ),
+					[
+						'code'          => 'unmatched_payment_currency',
+						'submission_id' => $submission_id,
+						'invoice_id'    => $invoice_id,
+						'currency'      => $invoice_data['currency'],
+					]
+				);
+				$this->respond( 200 );
+			}
+
+			// save method.
 			$form_submission->entry->meta['payments']['value']['gateway'] = 'btcpayserver';
-			$form_submission->entry->meta['payments']['value']['method']  = 'card';
+			$form_submission->entry->meta['payments']['value']['method']  = 'checkout';
 
-			// save subscription.
-			$form_submission->entry->meta['payments']['value']['subscription'] = [
-				'id'     => $subscription->payload->id,
-				'status' => $subscription->payload->status,
-				'mode'   => $this->mode,
+			// save payment intent.
+			$form_submission->entry->meta['payments']['value']['transactions'][ $invoice_id ] = [
+				'amount'   => $invoice_data['amount'],
+				'currency' => $invoice_data['currency'],
+				'status'   => $invoice_data['status'],
+				'mode'     => $this->mode,
 			];
+			// save payment intent lookup meta.
+			$form_submission->entry->meta[ "btcpayserver_$invoice_id" ]['value'] = '1';
 
-			// add meta lookup key.
-			$form_submission->entry->meta[ "btcpayserver_{$subscription->payload->id}" ]['value'] = '1';
-
-			$message = sprintf(
-				'<p>Subscription ID: %s</p>
-				<p>Subscription Status: %s</p>
-				<p>Customer Profile ID: %s</p>
-				<p>Customer Payment Profile ID: %s</p>
-				<p>Description: %s</p>',
-				$subscription->payload->id,
-				$subscription->payload->status,
-				$subscription->payload->profile->customerProfileId,
-				$subscription->payload->profile->paymentProfile->customerPaymentProfileId ?? '',
-				$subscription->payload->profile->description ?? ''
-			);
-
-			// add note.
+			// save to notes.
 			$form_submission->entry->meta['notes']['value'][] = [
 				'source'  => 'btcpayserver',
-				/* translators: %s for the subscription status */
-				'message' => $message,
+				/* translators: %s for payment id */
+				'message' => sprintf( esc_html__( 'Payment with invoice %s has been made', 'quillforms-btcpayserver' ), $invoice_id ),
 				'date'    => gmdate( 'Y-m-d H:i:s' ),
 			];
 
-			// get all paid payments for this subscription, typically it is one.
-			try {
-				$request = new AnetAPI\GetTransactionListForCustomerRequest();
-				$request->setMerchantAuthentication( $this->merchant_authentication );
-				$request->setCustomerProfileId( $subscription->payload->profile->customerProfileId );
-
-				$controller = new AnetController\GetTransactionListForCustomerController( $request );
-
-				$response = $controller->executeWithApiResponse( $this->environment );
-
-				if ( ( $response != null ) && ( $response->getMessages()->getResultCode() == 'Ok' ) ) {
-					if ( null != $response->getTransactions() ) {
-						foreach ( $response->getTransactions() as $tx ) {
-							$transaction_id = $tx->getTransId();
-							// add transaction.
-							$form_submission->entry->meta['payments']['value']['transactions'][ $transaction_id ] = [
-								'amount' => $tx->getSettleAmount(),
-								'mode'   => $this->mode,
-							];
-							// add lookup key.
-							$form_submission->entry->meta[ "btcpayserver_{$transaction_id}" ]['value'] = '1';
-							// add note.
-							$form_submission->entry->meta['notes']['value'][] = [
-								'source'  => 'btcpayserver',
-								/* translators: %s for payment id */
-								'message' => sprintf( esc_html__( 'Payment %s done', 'quillforms-btcpayserver' ), $transaction_id ),
-								'date'    => gmdate( 'Y-m-d H:i:s' ),
-							];
-						}
-					}
-				} else {
-					$errorMessages = $response->getMessages()->getMessage();
-					return new WP_Error( 'quillforms_btcpayserver', $errorMessages[0]->getCode() . '  ' . $errorMessages[0]->getText() );
-				}
-			} catch ( Throwable $e ) {
-				// just skip adding the transactions.
-			}
 			$form_submission->continue_pending_submission();
-			return;
-		} else {
-			if ( ! class_exists( Entries::class ) ) {
-				return;
-			}
+			$this->respond( 200 );
+		} catch ( Throwable $e ) {
+			quillforms_get_logger()->error(
+				esc_html__( 'Exception on getting invoice', 'quillforms-btcpayserver' ),
+				[
+					'code'      => 'webhook_invoice_get_exception',
+					'exception' => [
+						'message' => $e->getMessage(),
+						'trace'   => $e->getTrace(),
+					],
+				]
+			);
+			$this->respond( 200 );
+		}
+	}
 
-			$entry = Entry::get_by_meta( 'submission_id', $submission_id );
-			if ( ! $entry ) {
-				return;
-			}
+	/**
+	 * Handle invoice event
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param object $webhook_event Webhook event.
+	 *
+	 * @return void
+	 */
+	public function handle_invoice( $webhook_event ) {
+		if ( ! class_exists( Entries::class ) ) {
+			$this->respond( 200 );
+		}
 
+		$entry = Entry::get_by_meta( "btcpayserver_$webhook_event->invoiceId", '1' );
+		if ( ! $entry ) {
+			$this->respond( 200 );
+		}
+
+		$client = new Invoice( $this->mode_settings['site_url'], $this->mode_settings['api_key'] );
+		try {
+			$invoice      = $client->getInvoice( $this->mode_settings['site_id'], $webhook_event->invoiceId );
+			$invoice_data = $invoice->getData();
+			$invoice_id   = $invoice_data['id'];
 			$entry->load_meta();
 			$payments_meta = $entry->meta['payments'];
 			$notes_meta    = $entry->meta['notes'];
 
-			// check subscription id.
-			if ( $subscription->payload->id !== $payments_meta['value']['subscription']['id'] ) {
-				return;
+			// check if transaction already saved.
+			if ( ! isset( $payments_meta['value']['transactions'][ $invoice_id ] ) ) {
+				$this->respond( 200 );
 			}
 
-			// update payments meta.
-			$payments_meta['value']['subscription']['status'] = $subscription->payload->status;
+			// add transaction.
+			$payments_meta['value']['transactions'][ $invoice_id ]['status'] = $invoice_data['status'];
 			$entry->update_meta( 'payments', $payments_meta );
 
 			// add note.
 			$notes_meta['value'][] = [
 				'source'  => 'btcpayserver',
-				/* translators: %s for the subscription status */
-				'message' => sprintf( esc_html__( 'Subscription status changed to %s.', 'quillforms-btcpayserver' ), $subscription->payload->status ),
+				/* translators: %s for payment id */
+				'message' => sprintf( esc_html__( 'Invoice %1$s status changed to %2$s', 'quillforms-btcpayserver' ), $invoice_id, $invoice_data['status'] ),
 				'date'    => gmdate( 'Y-m-d H:i:s' ),
 			];
 			$entry->update_meta( 'notes', $notes_meta );
-			return;
+
+			$this->respond( 200 );
+		} catch ( Throwable $e ) {
+			quillforms_get_logger()->error(
+				esc_html__( 'Exception on getting invoice', 'quillforms-btcpayserver' ),
+				[
+					'code'      => 'webhook_invoice_get_exception',
+					'exception' => [
+						'message' => $e->getMessage(),
+						'trace'   => $e->getTrace(),
+					],
+				]
+			);
+			$this->respond( 200 );
 		}
-	}
-
-	/**
-	 * Handle charge refunded
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param object $charge
-	 * @return void
-	 */
-	private function handle_capture_refunded( $charge ) {
-		if ( empty( $charge->payload->id ) ) {
-			return;
-		}
-
-		if ( ! class_exists( Entries::class ) ) {
-			return;
-		}
-
-		$entry = Entry::get_by_meta( "btcpayserver_{$charge->payload->id}", '1' );
-		if ( ! $entry ) {
-			return;
-		}
-
-		$entry->load_meta();
-		$payments_meta = $entry->meta['payments'];
-		$notes_meta    = $entry->meta['notes'];
-
-		// check if transaction doesn't exist.
-		if ( ! isset( $payments_meta['value']['transactions'][ $charge->payload->id ] ) ) {
-			return;
-		}
-
-		// update transaction status.
-		$payments_meta['value']['transactions'][ $charge->payload->id ]['status'] = 'refunded';
-		$entry->update_meta( 'payments', $payments_meta );
-
-		// latest refund.
-		$latest_refund = $charge->payload->authAmount;
-
-		// add note.
-		$notes_meta['value'][] = [
-			'source'  => 'btcpayserver',
-			/* translators: %s for payment id */
-			'message' => sprintf( esc_html__( 'Amount %1$s is refunded from payment %2$s', 'quillforms-btcpayserver' ), $latest_refund, $charge->payload->id ),
-			'date'    => gmdate( 'Y-m-d H:i:s' ),
-		];
-		$entry->update_meta( 'notes', $notes_meta );
-
-		return;
-	}
-
-	/**
-	 * Handle transaction captured
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param object $transaction
-	 * @return void
-	 */
-	public function handle_capture_created( $transaction ) {
-		if ( empty( $transaction->payload->id ) ) {
-			return;
-		}
-
-		if ( ! class_exists( Entries::class ) ) {
-			return;
-		}
-
-		$entry = Entry::get_by_meta( "btcpayserver_{$transaction->payload->id}", '1' );
-		if ( ! $entry ) {
-			return;
-		}
-
-		$entry->load_meta();
-		$payments_meta = $entry->meta['payments'];
-		$notes_meta    = $entry->meta['notes'];
-
-		// check if transaction doesn't exist.
-		if ( ! isset( $payments_meta['value']['transactions'][ $transaction->payload->id ] ) ) {
-			return;
-		}
-
-		// update transaction status.
-		$payments_meta['value']['transactions'][ $transaction->payload->id ]['status'] = 'captured';
-		$entry->update_meta( 'payments', $payments_meta );
-
-		// latest payment.
-		$latest_payment = $transaction->payload->authAmount;
-
-		// add note.
-		$notes_meta['value'][] = [
-			'source'  => 'btcpayserver',
-			/* translators: %s for payment id */
-			'message' => sprintf( esc_html__( 'Amount %1$s is captured from payment %2$s', 'quillforms-btcpayserver' ), $latest_payment, $transaction->payload->id ),
-			'date'    => gmdate( 'Y-m-d H:i:s' ),
-		];
-		$entry->update_meta( 'notes', $notes_meta );
-
-		return;
 	}
 
 	/**
@@ -419,10 +277,19 @@ class Webhook {
 	 *
 	 * @return boolean
 	 */
-	private function get_webhook_verification( $body, $btcpayserver_signature ) {
-		// Get the auth hash from the header.
-		$auth_hash = isset( $_SERVER['HTTP_X_ANET_SIGNATURE'] ) ? strtoupper( explode( '=', $_SERVER['HTTP_X_ANET_SIGNATURE'] )[1] ) : '';
-		if ( empty( $auth_hash ) ) {
+	private function get_webhook_verification( $body ) {
+		try {
+			// Get the auth hash from the header.
+			$headers = getallheaders();
+			foreach ( $headers as $key => $value ) {
+				if ( strtolower( $key ) === 'btcpay-sig' ) {
+					$signature = $value;
+				}
+			}
+
+			$webhook_data = $this->mode_settings['webhook'];
+			return BTCPayServerWebhook::isIncomingWebhookRequestValid( $body, $signature, $webhook_data['secret'] );
+		} catch ( Exception $e ) {
 			quillforms_get_logger()->error(
 				esc_html__( 'Exception on webhook verification', 'quillforms-btcpayserver' ),
 				[
@@ -435,9 +302,20 @@ class Webhook {
 			);
 			return false;
 		}
-
-		$generated_hash = strtoupper( hash_hmac( 'sha512', $body, $btcpayserver_signature ) );
-		return hash_equals( $auth_hash, $generated_hash );
 	}
 
+	/**
+	 * Respond to a webhook request
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param integer $status
+	 * @param mixed   $content
+	 * @return void
+	 */
+	private function respond( $status, $content = null ) {
+		http_response_code( $status );
+		echo $content;
+		exit;
+	}
 }

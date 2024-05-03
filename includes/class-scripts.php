@@ -78,9 +78,6 @@ class Scripts extends Abstract_Scripts {
 			[
 				'configured'              => (bool) $settings,
 				'mode'                    => $settings['mode'] ?? null,
-				'api_login_id'            => $settings['api_login_id'] ?? null,
-				'transaction_key'         => $settings['transaction_key'] ?? null,
-				'signature_key'           => $settings['signature_key'] ?? null,
 				'customer_checkout_label' => $settings['customer_checkout_label'] ?? null,
 				'assetsDir'               => QUILLFORMS_AUTHORIZENET_PLUGIN_URL . 'assets',
 			]

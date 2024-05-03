@@ -11,6 +11,8 @@ namespace QuillForms_BTCPayServer;
 use DateTime;
 use QuillForms\Form_Submission;
 use BTCPayServer\Client\Invoice;
+use BTCPayServer\Client\InvoiceCheckoutOptions;
+use BTCPayServer\Util\PreciseNumber;
 
 /**
  * Renderer_Ajax Class
@@ -70,7 +72,7 @@ class Renderer_Ajax {
 	 */
 	public function ajax_create_order() {
 		$this->ajax_init_form_submission();
-		$this->ajax_ensure_availability( [ 'card' ] );
+		$this->ajax_ensure_availability( [ 'checkout' ] );
 		$this->ajax_init_btcpayserver_client();
 
 		$payments      = $this->form_submission->entry->get_meta_value( 'payments' );
@@ -78,25 +80,37 @@ class Renderer_Ajax {
 		$amount        = $products['total'];
 		$submission_id = absint( $_POST['submission_id'] );
 		$currency      = $payments['currency']['code'];
+		$form_id       = $this->form_submission->entry->form_id;
 
-		$client = new Invoice( $this->mode_settings['site_url'], $this->merchant_authentication['api_key'] );
+		$client          = new Invoice( $this->mode_settings['site_url'], $this->mode_settings['api_key'] );
+		$checkoutOptions = new InvoiceCheckoutOptions();
+		$return_url      = add_query_arg(
+			[
+				'submission_id'      => $submission_id,
+				'step'               => 'payment',
+				'method'             => 'btcpayserver:checkout',
+				'thankyou_screen_id' => $this->form_submission->get_thankyou_screen_id(),
+			],
+			get_post_permalink( $form_id )
+		);
 
+		$checkoutOptions->setRedirectURL( $return_url );
 		try {
 			$invoice = $client->createInvoice(
-				$this->mode_settings['store_id'],
+				$this->mode_settings['site_id'],
 				$currency,
-				$amount,
+				PreciseNumber::parseInt( $amount ),
 				$submission_id,
 				null, // this is null here as we handle it in the metadata.
-				null,
-				null
+				[
+					'submission_id' => $submission_id,
+				],
+				$checkoutOptions
 			);
-
-			$invoice->setRedirectURL( site_url( '?quillforms_btcpayserver_redirect=' . $submission_id, 'https' ) );
 
 			wp_send_json_success(
 				array(
-					'invoice' => $invoice->getData(),
+					'url' => $invoice->getData()['checkoutLink'],
 				)
 			);
 
@@ -119,9 +133,6 @@ class Renderer_Ajax {
 			wp_send_json_error( [ 'message' => esc_html__( 'Authorize.Net addon is not configured', 'quillforms-btcpayserver' ) ], 500 );
 			exit;
 		}
-
-		$this->merchant_authentication = $this->addon->get_btcpayserver_merchant_authentication( $this->mode_settings );
-		$this->environment             = $this->addon->get_btcpayserver_environment( $this->mode_settings );
 	}
 
 	/**

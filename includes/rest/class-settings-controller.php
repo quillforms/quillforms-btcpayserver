@@ -53,7 +53,7 @@ class Settings_Controller extends Abstract_Settings_Controller {
 				'sandbox_site_id'         => [
 					'type' => 'string',
 				],
-				'sandbox_webhook_id'      => [
+				'sandbox_webhook'         => [
 					'type'    => 'string',
 					'context' => [],
 				],
@@ -66,7 +66,7 @@ class Settings_Controller extends Abstract_Settings_Controller {
 				'live_site_id'            => [
 					'type' => 'string',
 				],
-				'live_webhook_id'         => [
+				'live_webhook'            => [
 					'type'    => 'string',
 					'context' => [],
 				],
@@ -142,7 +142,7 @@ class Settings_Controller extends Abstract_Settings_Controller {
 				"{$mode}_api_key"         => $api_key,
 				"{$mode}_site_id"         => $site_id,
 				"{$mode}_site_url"        => $site_url,
-				"{$mode}_webhook_id"      => $webhook['id'],
+				"{$mode}_webhook_id"      => $webhook,
 				'customer_checkout_label' => $settings['customer_checkout_label'] ?? '',
 			]
 		);
@@ -201,7 +201,7 @@ class Settings_Controller extends Abstract_Settings_Controller {
 	 * @return string
 	 */
 	private function get_webhook_url( $mode ) {
-		return site_url( "quillforms_btcpayserver_webhook_{$mode}", 'https' );
+		return site_url( "?quillforms_btcpayserver_webhook=$mode", 'https' );
 	}
 
 }

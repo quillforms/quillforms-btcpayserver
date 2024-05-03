@@ -7,6 +7,7 @@ import { addFilter } from '@wordpress/hooks';
  * Internal Dependencies
  */
 import NotConfigured from '../components/not-configured';
+import CustomerCheckout from '../components/customer-checkout';
 
 addFilter(
 	'QuillForms.PaymentGateways.PaymentGatewayModule',
@@ -24,7 +25,7 @@ addFilter(
 			// configured and render.
 			if ( localize.configured ) {
 				gateway.methods.checkout.configured = true;
-				gateway.methods.checkout.customer.render = () => null;
+				gateway.methods.checkout.customer.render = CustomerCheckout;
 			} else {
 				gateway.methods.checkout.customer.render = NotConfigured;
 			}
