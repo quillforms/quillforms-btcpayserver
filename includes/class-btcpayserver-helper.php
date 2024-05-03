@@ -121,14 +121,14 @@ class BTCPayServer_Helper {
 		}
 		$api_key_name  = "{$mode}_api_key";
 		$site_url_name = "{$mode}_site_url";
-		$site_id_name  = "{$mode}_site_id";
+		$store_id_name = "{$mode}_store_id";
 		$webhook_name  = "{$mode}_webhook";
 		$this->addon->settings->update(
 			[
 				'mode'         => $mode,
 				$api_key_name  => $api_key,
 				$site_url_name => $site_url,
-				$site_id_name  => $this->get_store_id(),
+				$store_id_name => $this->get_store_id(),
 				$webhook_name  => $webhook,
 			]
 		);
@@ -150,13 +150,13 @@ class BTCPayServer_Helper {
 	 */
 	public function create_webhook( $api_key, $site_url, $store_id, $mode ) {
 		$webhook_url    = $this->get_webhook_url( $mode );
-		$stored_webhook = $this->addon->settings->get( "{$mode}_webhook_id" );
+		$stored_webhook = $this->addon->settings->get( "{$mode}_webhook" );
 
 		try {
 			$client = new Webhook( $site_url, $api_key );
-			if ( $stored_webhook ) {
-				$existing = $client->getWebhook( $store_id, $stored_webhook );
-				if ( $existing->getData()['id'] === $stored_webhook ) {
+			if ( $stored_webhook['id'] ?? false ) {
+				$existing = $client->getWebhook( $store_id, $stored_webhook['id'] );
+				if ( $existing->getData()['id'] === $stored_webhook['id'] ) {
 					return $existing->getData();
 				}
 			}

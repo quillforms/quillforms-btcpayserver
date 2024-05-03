@@ -11,7 +11,7 @@
 		"build-renderer": "qf-scripts build package/renderer --output-path=build/renderer",
 		"wp-env": "wp-env",
 		"pretest-unit-php": "wp-env start",
-		"test-unit-php": "wp-env run phpunit 'phpunit -c /var/www/html/wp-content/plugins/quillforms-stripe/phpunit.xml.dist --verbose'"
+		"test-unit-php": "wp-env run phpunit 'phpunit -c /var/www/html/wp-content/plugins/quillforms-btcpayserver/phpunit.xml.dist --verbose'"
 	},
 	"dependencies": {
 		"@quillforms/admin-components": "file:../quillforms/packages/admin-components",

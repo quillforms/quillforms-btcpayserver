@@ -50,7 +50,7 @@ class Settings_Controller extends Abstract_Settings_Controller {
 				'sandbox_api_key'         => [
 					'type' => 'string',
 				],
-				'sandbox_site_id'         => [
+				'sandbox_store_id'        => [
 					'type' => 'string',
 				],
 				'sandbox_webhook'         => [
@@ -63,7 +63,7 @@ class Settings_Controller extends Abstract_Settings_Controller {
 				'live_api_key'            => [
 					'type' => 'string',
 				],
-				'live_site_id'            => [
+				'live_store_id'           => [
 					'type' => 'string',
 				],
 				'live_webhook'            => [
@@ -96,14 +96,14 @@ class Settings_Controller extends Abstract_Settings_Controller {
 		// to avoid unexplained errors to user, only connect to current user viewable keys.
 		$mode          = $settings['mode'];
 		$api_key_name  = "{$mode}_api_key";
-		$site_id_name  = "{$mode}_site_id";
+		$store_id_name = "{$mode}_store_id";
 		$site_url_name = "{$mode}_site_url";
 		$api_key       = trim( $settings[ $api_key_name ] ?? '' );
-		$site_id       = trim( $settings[ $site_id_name ] ?? '' );
+		$store_id      = trim( $settings[ $store_id_name ] ?? '' );
 		$site_url      = trim( $settings[ $site_url_name ] ?? '' );
 
 		// ensure api login id and transaction key are not empty.
-		if ( empty( $api_key ) || empty( $site_id ) ) {
+		if ( empty( $api_key ) || empty( $store_id ) ) {
 			return new WP_Error( 'quillforms_btcpayserver_settings_update', esc_html__( 'Both API Login ID and Transaction Key are required', 'quillforms-btcpayserver' ) );
 		}
 
@@ -114,7 +114,7 @@ class Settings_Controller extends Abstract_Settings_Controller {
 
 		// ensure api login id and transaction key are valid.
 		$current_settings = $this->addon->settings->get();
-		if ( ( $current_settings[ $api_key_name ] ?? null ) === $api_key && ( $current_settings[ $site_id_name ] ?? null ) === $site_id ) {
+		if ( ( $current_settings[ $api_key_name ] ?? null ) === $api_key && ( $current_settings[ $store_id_name ] ?? null ) === $store_id ) {
 			$this->addon->settings->update(
 				[
 					'mode'                    => $mode,
@@ -130,7 +130,7 @@ class Settings_Controller extends Abstract_Settings_Controller {
 		}
 
 		// create webhook.
-		$webhook = $this->create_webhook( $api_key, $site_url, $site_id, $mode );
+		$webhook = $this->create_webhook( $api_key, $site_url, $store_id, $mode );
 		if ( ! isset( $webhook['id'] ) ) {
 			return new WP_Error( 'quillforms_btcpayserver_create_webhook', esc_html__( 'Cannot create webhook. See log for details.', 'quillforms-btcpayserver' ) );
 		}
@@ -140,7 +140,7 @@ class Settings_Controller extends Abstract_Settings_Controller {
 			[
 				'mode'                    => $mode,
 				"{$mode}_api_key"         => $api_key,
-				"{$mode}_site_id"         => $site_id,
+				"{$mode}_store_id"        => $store_id,
 				"{$mode}_site_url"        => $site_url,
 				"{$mode}_webhook_id"      => $webhook,
 				'customer_checkout_label' => $settings['customer_checkout_label'] ?? '',
@@ -173,13 +173,13 @@ class Settings_Controller extends Abstract_Settings_Controller {
 	 */
 	public function create_webhook( $api_key, $site_url, $store_id, $mode ) {
 		$webhook_url    = $this->get_webhook_url( $mode );
-		$stored_webhook = $this->addon->settings->get( "{$mode}_webhook_id" );
+		$stored_webhook = $this->addon->settings->get( "{$mode}_webhook" );
 
 		try {
 			$client = new Webhook( $site_url, $api_key );
 			if ( $stored_webhook ) {
 				$existing = $client->getWebhook( $store_id, $stored_webhook );
-				if ( $existing->getData()['id'] === $stored_webhook ) {
+				if ( $existing->getData()['id'] === $stored_webhook['id'] ?? '' ) {
 					return $existing->getData();
 				}
 			}

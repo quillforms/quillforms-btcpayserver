@@ -28,38 +28,41 @@ interface Props {
 	onComplete: () => void;
 }
 
-const CustomerCheckout: React.FC< Props > = ( { data, onComplete } ) => {
+const CustomerCheckout: React.FC< Props > = ( { data } ) => {
 	const generalTheme = useTheme();
 	const [ isPaying, setIsPaying ] = React.useState( false );
 	const handleClick = async () => {
 		setIsPaying( true );
 		try {
 			const response = await await fetch(
-			ConfigApi.getAdminUrl() + 'admin-ajax.php',
-			{
-				method: 'POST',
-				body: new URLSearchParams( {
-					action: 'quillforms_btcpayserver_create_order',
-					submission_id: data.submission_id
-				} ),
-			}
-		);
+				ConfigApi.getAdminUrl() + 'admin-ajax.php',
+				{
+					method: 'POST',
+					body: new URLSearchParams( {
+						action: 'quillforms_btcpayserver_create_order',
+						submission_id: data.submission_id,
+					} ),
+				}
+			);
 
-		const responseData = await response.json();
-		if (responseData.data?.url) {
+			const responseData = await response.json();
+			if ( responseData.data?.url ) {
 				window.location.href = responseData.data.url;
 			} else {
-				console.error('Stripe create checkout session error', responseData);
+				console.error(
+					'Stripe create checkout session error',
+					responseData
+				);
 			}
 		} catch ( e ) {}
-		
+
 		setIsPaying( false );
 	};
 
 	return (
 		<div className="quillforms-btcpayserver-renderer-checkout">
 			<Button
-				className={classnames(
+				className={ classnames(
 					{
 						loading: isPaying,
 					},
@@ -69,19 +72,19 @@ const CustomerCheckout: React.FC< Props > = ( { data, onComplete } ) => {
 						}
 					`,
 					'payment-button'
-				)}
-				onClick={handleClick}
+				) }
+				onClick={ handleClick }
 			>
 				<span id="button-text">
-					{isPaying ? (
+					{ isPaying ? (
 						<Loader
-							color={generalTheme.buttonsFontColor}
-							height={50}
-							width={50}
+							color={ generalTheme.buttonsFontColor }
+							height={ 50 }
+							width={ 50 }
 						/>
 					) : (
-						'Pay now'
-					)}
+						<>{ data?.labels?.pay ?? 'Pay now' }</>
+					) }
 				</span>
 			</Button>
 		</div>

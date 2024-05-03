@@ -97,7 +97,7 @@ class Renderer_Ajax {
 		$checkoutOptions->setRedirectURL( $return_url );
 		try {
 			$invoice = $client->createInvoice(
-				$this->mode_settings['site_id'],
+				$this->mode_settings['store_id'],
 				$currency,
 				PreciseNumber::parseInt( $amount ),
 				$submission_id,

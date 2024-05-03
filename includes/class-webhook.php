@@ -139,7 +139,7 @@ class Webhook {
 
 		$client = new Invoice( $this->mode_settings['site_url'], $this->mode_settings['api_key'] );
 		try {
-			$invoice      = $client->getInvoice( $this->mode_settings['site_id'], $webhook_event->invoiceId );
+			$invoice      = $client->getInvoice( $this->mode_settings['store_id'], $webhook_event->invoiceId );
 			$invoice_data = $invoice->getData();
 			$invoice_id   = $invoice_data['id'];
 
@@ -231,7 +231,7 @@ class Webhook {
 
 		$client = new Invoice( $this->mode_settings['site_url'], $this->mode_settings['api_key'] );
 		try {
-			$invoice      = $client->getInvoice( $this->mode_settings['site_id'], $webhook_event->invoiceId );
+			$invoice      = $client->getInvoice( $this->mode_settings['store_id'], $webhook_event->invoiceId );
 			$invoice_data = $invoice->getData();
 			$invoice_id   = $invoice_data['id'];
 			$entry->load_meta();

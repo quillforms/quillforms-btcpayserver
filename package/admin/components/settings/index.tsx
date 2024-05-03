@@ -31,10 +31,10 @@ import './style.scss';
 type SettingsType = {
 	mode: string;
 	sandbox_site_url: string;
-	sandbox_site_id: string;
+	sandbox_store_id: string;
 	sandbox_api_key: string;
 	live_site_url: string;
-	live_site_id: string;
+	live_store_id: string;
 	live_api_key: string;
 	customer_checkout_label: string;
 };
@@ -79,7 +79,19 @@ const Settings: React.FC = () => {
 	const generateApiKey = async () => {
 		if ( ! settings ) return;
 		if ( ! settings.mode ) return;
-		if ( ! settings[ `${ settings.mode }_site_url` ] ) return;
+		if ( ! settings[ `${ settings.mode }_site_url` ] ) {
+			createErrorNotice(
+				`⛔ ${ __(
+					'Site URL is required',
+					'quillforms-btcpayserver'
+				) }`,
+				{
+					type: 'snackbar',
+					isDismissible: true,
+				}
+			);
+			return;
+		}
 		setIsGenerating( true );
 
 		try {
@@ -237,15 +249,15 @@ const Settings: React.FC = () => {
 							<div className="quillforms-settings-payments-btcpayserver-row">
 								<div className="quillforms-settings-payments-btcpayserver-row-label">
 									{ __(
-										'Sandbox Site ID',
+										'Sandbox Store ID',
 										'quillforms-btcpayserver'
 									) }
 								</div>
 								<TextControl
 									className=""
-									value={ settings.sandbox_site_id ?? '' }
+									value={ settings.sandbox_store_id ?? '' }
 									onChange={ ( value ) =>
-										setSetting( 'sandbox_site_id', value )
+										setSetting( 'sandbox_store_id', value )
 									}
 								/>
 							</div>
@@ -283,17 +295,33 @@ const Settings: React.FC = () => {
 								/>
 							</div>
 							<div className="quillforms-settings-payments-btcpayserver-row">
+								<Button isPrimary onClick={ generateApiKey }>
+									{ isGenerating ? (
+										<Loader
+											color="#fff"
+											height={ 20 }
+											width={ 20 }
+										/>
+									) : (
+										__(
+											'Generate API Key',
+											'quillforms-btcpayserver'
+										)
+									) }
+								</Button>
+							</div>
+							<div className="quillforms-settings-payments-btcpayserver-row">
 								<div className="quillforms-settings-payments-btcpayserver-row-label">
 									{ __(
-										'Live Site ID',
+										'Live Store ID',
 										'quillforms-btcpayserver'
 									) }
 								</div>
 								<TextControl
 									className=""
-									value={ settings.live_site_id ?? '' }
+									value={ settings.live_store_id ?? '' }
 									onChange={ ( value ) =>
-										setSetting( 'live_site_id', value )
+										setSetting( 'live_store_id', value )
 									}
 								/>
 							</div>
@@ -325,9 +353,12 @@ const Settings: React.FC = () => {
 							'quillforms-btcpayserver'
 						) }
 					</div>
-					<div className="quillforms-settings-payments-stripe-row">
-						<div className="quillforms-settings-payments-stripe-row-label">
-							{ __( 'card Label', 'quillforms-stripe' ) }
+					<div className="quillforms-settings-payments-btcpayserver-row">
+						<div className="quillforms-settings-payments-btcpayserver-row-label">
+							{ __(
+								'Checkout Label',
+								'quillforms-btcpayserver'
+							) }
 						</div>
 						<TextControl
 							className=""
