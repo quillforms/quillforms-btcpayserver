@@ -69,7 +69,7 @@ class Admin_Ajax {
 				__( 'QuillForms BTCPayServer', 'quillforms-btcpayserver' ),
 				true,
 				true,
-				site_url( '?quillforms_btcpayserver_auth', 'https' ),
+				site_url( '?quillforms_btcpayserver_auth=' . $mode ),
 				null
 			);
 

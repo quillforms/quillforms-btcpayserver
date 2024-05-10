@@ -177,10 +177,10 @@ class Settings_Controller extends Abstract_Settings_Controller {
 
 		try {
 			$client = new Webhook( $site_url, $api_key );
-			if ( $stored_webhook ) {
-				$existing = $client->getWebhook( $store_id, $stored_webhook );
-				if ( $existing->getData()['id'] === $stored_webhook['id'] ?? '' ) {
-					return $existing->getData();
+			if ( isset( $stored_webhook['id'] ) ) {
+				$existing = $this->get_webhook( $api_key, $site_url, $store_id, $mode );
+				if ( $existing ) {
+					return $existing;
 				}
 			}
 
@@ -188,6 +188,33 @@ class Settings_Controller extends Abstract_Settings_Controller {
 
 			return $webhook->getData();
 		} catch ( \Exception $e ) {
+			return false;
+		}
+	}
+
+	/**
+	 * Get existing webhook.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $api_key API key.
+	 * @param string $site_url Site URL.
+	 * @param string $store_id Store ID.
+	 * @param string $mode Mode.
+	 *
+	 * @return WebhookResult
+	 */
+	public function get_webhook( $api_key, $site_url, $store_id, $mode ) {
+		$webhook_url    = $this->get_webhook_url( $mode );
+		$stored_webhook = $this->addon->settings->get( "{$mode}_webhook" );
+
+		try {
+			$client   = new Webhook( $site_url, $api_key );
+			$existing = $client->getWebhook( $store_id, $stored_webhook['id'] );
+			if ( $existing->getData()['id'] === $stored_webhook['id'] ) {
+				return $stored_webhook;
+			}
+		} catch ( Exception $e ) {
 			return false;
 		}
 	}
