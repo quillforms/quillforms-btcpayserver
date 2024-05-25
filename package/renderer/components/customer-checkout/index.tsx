@@ -83,7 +83,7 @@ const CustomerCheckout: React.FC< Props > = ( { data } ) => {
 							width={ 50 }
 						/>
 					) : (
-						<>{ data?.labels?.pay ?? 'Pay now' }</>
+						<>{ data?.payments?.labels?.pay ?? 'Pay now' }</>
 					) }
 				</span>
 			</Button>
