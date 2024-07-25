@@ -106,7 +106,7 @@ class Renderer_Ajax {
 			$invoice = $client->createInvoice(
 				$this->mode_settings['store_id'],
 				$currency,
-				PreciseNumber::parseInt( $amount ),
+				PreciseNumber::parseString( $amount ),
 				$submission_id,
 				null, // this is null here as we handle it in the metadata.
 				$metadata,
