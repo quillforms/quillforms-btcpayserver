@@ -79,7 +79,7 @@ class Scripts extends Abstract_Scripts {
 				'configured'              => (bool) $settings,
 				'mode'                    => $settings['mode'] ?? null,
 				'customer_checkout_label' => $settings['customer_checkout_label'] ?? null,
-				'assetsDir'               => QUILLFORMS_AUTHORIZENET_PLUGIN_URL . 'assets',
+				'assetsDir'               => QUILLFORMS_BTCPAYSERVER_PLUGIN_URL . 'assets',
 			]
 		);
 	}

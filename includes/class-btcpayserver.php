@@ -58,7 +58,7 @@ final class BTCPayServer extends Payment_Gateway {
 	 *
 	 * @var string
 	 */
-	public $version = QUILLFORMS_AUTHORIZENET_VERSION;
+	public $version = QUILLFORMS_BTCPAYSERVER_VERSION;
 
 	/**
 	 * Text domain
@@ -76,7 +76,7 @@ final class BTCPayServer extends Payment_Gateway {
 	 *
 	 * @var string
 	 */
-	public $plugin_file = QUILLFORMS_AUTHORIZENET_PLUGIN_FILE;
+	public $plugin_file = QUILLFORMS_BTCPAYSERVER_PLUGIN_FILE;
 
 	/**
 	 * Plugin dir
@@ -85,7 +85,7 @@ final class BTCPayServer extends Payment_Gateway {
 	 *
 	 * @var string
 	 */
-	public $plugin_dir = QUILLFORMS_AUTHORIZENET_PLUGIN_DIR;
+	public $plugin_dir = QUILLFORMS_BTCPAYSERVER_PLUGIN_DIR;
 
 	/**
 	 * Plugin url
@@ -94,7 +94,7 @@ final class BTCPayServer extends Payment_Gateway {
 	 *
 	 * @var string
 	 */
-	public $plugin_url = QUILLFORMS_AUTHORIZENET_PLUGIN_URL;
+	public $plugin_url = QUILLFORMS_BTCPAYSERVER_PLUGIN_URL;
 
 	/**
 	 * Checkout method
