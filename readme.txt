@@ -1,12 +1,15 @@
 === Quill Forms BTCPayServer ===
 Contributors: quillforms, mdmag
-Tested up to: 6.1
+Tested up to: 6.7.0
 Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 
 == Changelog ==
+= 1.1.1
+Fix - Fixed the missing build folder.
+Fix - Fixed the incorrect constants.
 
 = 1.0.3 =
 Fix - Fixed the float amount issue.
