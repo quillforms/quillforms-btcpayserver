@@ -1,1 +1,1 @@
-<?php return array('dependencies' => array('emotion', 'quillforms-admin-components', 'quillforms-config', 'quillforms-navigation', 'react', 'wp-api-fetch', 'wp-data', 'wp-element', 'wp-hooks', 'wp-i18n'), 'version' => 'b2961bfe5aabf30f1b13');
+<?php return array('dependencies' => array('emotion', 'quillforms-admin-components', 'quillforms-config', 'quillforms-navigation', 'react', 'wp-api-fetch', 'wp-data', 'wp-element', 'wp-hooks', 'wp-i18n'), 'version' => 'a89cfd1fa332b96159c2');
