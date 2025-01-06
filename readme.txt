@@ -1,12 +1,16 @@
 === Quill Forms BTCPayServer ===
 Contributors: quillforms, mdmag
 Tested up to: 6.7.0
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 
 == Changelog ==
+
+= 1.1.2 =
+Add - Added CHF currency to the list of supported currencies.
+
 = 1.1.1
 Fix - Fixed the missing build folder.
 Fix - Fixed the incorrect constants.

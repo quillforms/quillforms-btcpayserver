@@ -3,7 +3,7 @@
  * Plugin Name:       Quill Forms BTCPayServer
  * Plugin URI:        https://quillforms.com
  * Description:       BTCPayServer extension for Quill Forms
- * Version:           1.1.1
+ * Version:           1.1.2
  * Author:            quillforms.com
  * Author URI:        https://quillforms.com
  * Text Domain:       quillforms-btcpayserver
@@ -23,7 +23,7 @@ if ( ! defined( 'QUILLFORMS_BTCPAYSERVER_PLUGIN_FILE' ) ) {
 
 // Plugin version.
 if ( ! defined( 'QUILLFORMS_BTCPAYSERVER_VERSION' ) ) {
-	define( 'QUILLFORMS_BTCPAYSERVER_VERSION', '1.1.1' );
+	define( 'QUILLFORMS_BTCPAYSERVER_VERSION', '1.1.2' );
 }
 
 // Plugin Folder Path.
