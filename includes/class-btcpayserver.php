@@ -208,7 +208,7 @@ final class BTCPayServer extends Payment_Gateway {
 	 * @return boolean
 	 */
 	public function is_currency_supported( $currency ) {
-		$supported_currencies = [ 'USD', 'AUD', 'EUR', 'GBP', 'CAD' ];
+		$supported_currencies = [ 'USD', 'AUD', 'EUR', 'GBP', 'CAD', 'CHF' ];
 
 		return in_array( strtoupper( $currency ), $supported_currencies, true );
 	}
